@@ -111,13 +111,14 @@ func TestCountStepWaysV2(t *testing.T) {
 	assert.Equal(t, 7, CountStepWaysV2(4))
 	assert.Equal(t, 13, CountStepWaysV2(5))
 	assert.Equal(t, 66012, CountStepWaysV2(19))
+	assert.Equal(t, 3831006429, CountStepWaysV2(37))
 }
 
 // CountStepWaysV3 使用动态规划计算爬 rungCount 级楼梯有多少种方法
-func CountStepWaysV3(rungCount int) int {
-	stepWaysCounts := []int{0, 0, 1}
+func CountStepWaysV3(rungCount int32) int32 {
+	stepWaysCounts := []int32{0, 0, 1}
 
-	for rungIndex := 0; rungIndex < rungCount; rungIndex++ {
+	for rungIndex := int32(0); rungIndex < rungCount; rungIndex++ {
 		stepWaysCounts = append(stepWaysCounts,
 			stepWaysCounts[rungIndex+0]+
 				stepWaysCounts[rungIndex+1]+
@@ -128,9 +129,11 @@ func CountStepWaysV3(rungCount int) int {
 }
 
 func TestCountStepWaysV3(t *testing.T) {
-	assert.Equal(t, 2, CountStepWaysV3(2))
-	assert.Equal(t, 4, CountStepWaysV3(3))
-	assert.Equal(t, 7, CountStepWaysV3(4))
-	assert.Equal(t, 13, CountStepWaysV3(5))
-	assert.Equal(t, 66012, CountStepWaysV3(19))
+	assert.Equal(t, int32(2), CountStepWaysV3(2))
+	assert.Equal(t, int32(4), CountStepWaysV3(3))
+	assert.Equal(t, int32(7), CountStepWaysV3(4))
+	assert.Equal(t, int32(13), CountStepWaysV3(5))
+	assert.Equal(t, int32(66012), CountStepWaysV3(19))
+	assert.Equal(t, int32(2082876103), CountStepWaysV3(36))
+	assert.Equal(t, int32(-463960867), CountStepWaysV3(37))
 }

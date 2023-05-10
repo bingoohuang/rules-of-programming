@@ -204,10 +204,10 @@ func countStepWaysV2(memo map[int]int, stepCount int) int {
 package rule1
 
 // CountStepWaysV3 使用动态规划计算爬 rungCount 级楼梯有多少种方法
-func CountStepWaysV3(rungCount int) int {
-	stepWaysCounts := []int{0, 0, 1}
+func CountStepWaysV3(rungCount int32) int32 {
+	stepWaysCounts := []int32{0, 0, 1}
 
-	for rungIndex := 0; rungIndex < rungCount; rungIndex++ {
+	for rungIndex := int32(0); rungIndex < rungCount; rungIndex++ {
 		stepWaysCounts = append(stepWaysCounts,
 			stepWaysCounts[rungIndex+0]+
 				stepWaysCounts[rungIndex+1]+
@@ -222,5 +222,15 @@ func CountStepWaysV3(rungCount int) int {
 这种方法也运行得足够快，而且比备忘录递归版本还要简单。
 
 ## 有时候，简化问题而不是解决问题会更好。
+
+原始的递归版本的 `CountStepWays` 存在长楼梯时出现问题。简单的代码可以很好地处理短楼梯，但对于长楼梯却会遇到指数级的性能壁垒。后续版本在稍微增加一些复杂性的代价下避免了指数级壁垒，但不久后又遇到了不同的问题。
+
+如果我运行之前的代码以计算 `CountStepWaysV3(36)`，我会得到正确的答案 `2082876103`。不过，调用 `CountStepWaysV3(37)`
+却返回了-463960867。这显然不对！
+
+这是因为我使用的 go 版本将 int32 (带符号32位 ) 值，而计算 `CountStepWaysV3(37)` 导致可用位数溢出。有 `3831006429`种方法可以爬上一个
+37 阶的楼梯，这个数字太大了，无法容纳在 int32 中。
+
+所以也许代码还是太简单了。我们可以合理地期望 `CountStepWays` 可以适用于所有楼梯的长度，对吧？
 
 （未完待续）
