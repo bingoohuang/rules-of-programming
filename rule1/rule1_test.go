@@ -1,8 +1,11 @@
 package rule1
 
 import (
+	"errors"
 	"github.com/stretchr/testify/assert"
+	"math/rand"
 	"testing"
+	"time"
 )
 
 func CountSetBits(value int) int {
@@ -136,4 +139,75 @@ func TestCountStepWaysV3(t *testing.T) {
 	assert.Equal(t, int32(66012), CountStepWaysV3(19))
 	assert.Equal(t, int32(2082876103), CountStepWaysV3(36))
 	assert.Equal(t, int32(-463960867), CountStepWaysV3(37))
+}
+
+var ErrOverFlowRungCount = errors.New("max rungs is 36")
+
+// CountStepWaysV4 使用动态规划计算爬 rungCount 级楼梯有多少种方法
+// 如果 rungCount 超过 36， 返回 ErrOverFlowRungCount 错误
+func CountStepWaysV4(rungCount int32) (int32, error) {
+	// NOTE (chris) can't represent the pattern count in an int
+	// once we get past 36 rungs...”
+	if rungCount > 36 {
+		return 0, ErrOverFlowRungCount
+	}
+
+	stepWaysCounts := []int32{0, 0, 1}
+
+	for rungIndex := int32(0); rungIndex < rungCount; rungIndex++ {
+		stepWaysCounts = append(stepWaysCounts,
+			stepWaysCounts[rungIndex+0]+
+				stepWaysCounts[rungIndex+1]+
+				stepWaysCounts[rungIndex+2])
+	}
+
+	return stepWaysCounts[len(stepWaysCounts)-1], nil
+}
+
+// Card 表示扑克牌
+type Card int
+
+func shuffleOnce(cards []Card) (shuffledCards []Card) {
+	ran := rand.New(rand.NewSource(time.Now().UnixMilli()))
+
+	splitIndex := len(cards) / 2
+	leftIndex := 0
+	rightIndex := splitIndex
+
+	for {
+		if leftIndex >= splitIndex {
+			shuffledCards = append(shuffledCards, cards[rightIndex:]...)
+			break
+		} else if rightIndex >= len(cards) {
+			shuffledCards = append(shuffledCards, cards[leftIndex:splitIndex]...)
+			break
+		} else if ran.Intn(2) == 1 {
+			shuffledCards = append(shuffledCards, cards[rightIndex])
+			rightIndex++
+		} else {
+			shuffledCards = append(shuffledCards, cards[leftIndex])
+			leftIndex++
+		}
+	}
+
+	return shuffledCards
+}
+
+// Shuffle 对若干扑克牌洗牌
+func Shuffle(cards []Card) []Card {
+	shuffledCards := cards
+	for i := 0; i < 7; i++ {
+		shuffledCards = shuffleOnce(shuffledCards)
+	}
+
+	return shuffledCards
+}
+
+// ShuffleV2 对若干扑克牌洗牌
+func ShuffleV2(cards []Card) {
+	rand := rand.New(rand.NewSource(time.Now().UnixMilli()))
+	for i := len(cards) - 1; i > 0; i-- {
+		j := rand.Intn(i)
+		cards[i], cards[j] = cards[j], cards[i]
+	}
 }
